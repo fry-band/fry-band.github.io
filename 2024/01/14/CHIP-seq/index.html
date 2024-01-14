@@ -1,0 +1,697 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="fry-band">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Homo sapiens，neuron神经元细胞的数据分析；  rawdata数据处理 了解ChIP-seq的实验流程 (qq.com) 下载数据 vim&nbsp;download_data.sh#!&#x2F;bin&#x2F;bashfor&nbsp;i&nbsp;in&nbsp;806&nbsp;807&nbsp;809&nbsp;810&nbsp;811&nbsp;812&nbsp;813&nbsp;817">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CHIP-seq">
+<meta property="og:url" content="https://fry-band.github.io/2024/01/14/CHIP-seq/index.html">
+<meta property="og:site_name" content="Et Aiors">
+<meta property="og:description" content="Homo sapiens，neuron神经元细胞的数据分析；  rawdata数据处理 了解ChIP-seq的实验流程 (qq.com) 下载数据 vim&nbsp;download_data.sh#!&#x2F;bin&#x2F;bashfor&nbsp;i&nbsp;in&nbsp;806&nbsp;807&nbsp;809&nbsp;810&nbsp;811&nbsp;812&nbsp;813&nbsp;817">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://files.mdnice.com/user/40799/3b91a65f-576e-4ddf-a897-e0a4c0ff342d.png">
+<meta property="og:image" content="https://files.mdnice.com/user/40799/a2d3d0a6-e927-4ef4-b9a3-a05bb3ddec18.png">
+<meta property="article:published_time" content="2024-01-14T11:09:16.000Z">
+<meta property="article:modified_time" content="2024-01-14T11:22:06.973Z">
+<meta property="article:author" content="fry-band(xys)">
+<meta property="article:tag" content="生物信息学">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://files.mdnice.com/user/40799/3b91a65f-576e-4ddf-a897-e0a4c0ff342d.png">
+  
+  
+  
+  <title>CHIP-seq - Et Aiors</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"fry-band.github.io","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.0.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Et Aiors</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>Home</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>Archives</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>Categories</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>Tags</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>About</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="CHIP-seq"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-01-14 19:09" pubdate>
+          January 14, 2024 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          845 words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          8 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">CHIP-seq</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <section id="nice" data-tool="mdnice编辑器" data-website="https://www.mdnice.com" style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 10px; padding-right: 10px; background-attachment: scroll; background-clip: border-box; background-color: rgba(0, 0, 0, 0); background-image: none; background-origin: padding-box; background-position-x: 0%; background-position-y: 0%; background-repeat: no-repeat; background-size: auto; width: auto; height: auto; font-family: Optima, 'Microsoft YaHei', PingFangSC-regular, serif; font-size: 16px; color: rgb(0, 0, 0); line-height: 1.5em; word-spacing: 0em; letter-spacing: 0em; word-break: break-word; overflow-wrap: break-word; text-align: left;"><p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">Homo sapiens，neuron神经元细胞的数据分析；</p>
+<ol data-tool="mdnice编辑器" style="list-style-type: decimal; margin-top: 8px; margin-bottom: 8px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 25px; padding-right: 0px; color: rgb(0, 0, 0);">
+<li><section style="margin-top: 5px; margin-bottom: 5px; color: rgb(1, 1, 1); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; font-weight: normal;">rawdata数据处理
+了解ChIP-seq的实验流程 (qq.com)</section></li></ol>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">下载数据</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">vim&nbsp;download_data.sh<br><span class="hljs-meta" style="color: #61aeee; line-height: 26px;">#!/bin/bash</span><br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">for</span>&nbsp;i&nbsp;<span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">in</span>&nbsp;806&nbsp;807&nbsp;809&nbsp;810&nbsp;811&nbsp;812&nbsp;813&nbsp;817&nbsp;<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">do</span><br>&nbsp;&nbsp;prefetch-orig.2.10.8&nbsp;`srapath-orig.2.10.8&nbsp;SRR13764<span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$&#123;i&#125;</span>`<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">done</span><br>qsub&nbsp;-N&nbsp;download&nbsp;-cwd&nbsp;download.sh&nbsp;-q&nbsp;g5.q&nbsp;<br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">sra2fastq
+single end 75 bp</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">vim&nbsp;sra2fastq.sh<br><span class="hljs-meta" style="color: #61aeee; line-height: 26px;">#!/bin/bash</span><br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">for</span>&nbsp;i&nbsp;<span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">in</span>&nbsp;806&nbsp;807&nbsp;809&nbsp;810&nbsp;811&nbsp;812&nbsp;813&nbsp;817&nbsp;<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">do</span><br>&nbsp;&nbsp;fastq-dump-orig.2.10.8&nbsp;--split-3&nbsp;-O&nbsp;fastq&nbsp;--gzip&nbsp;SRR13764<span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$&#123;i&#125;</span>/SRR13764<span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$&#123;i&#125;</span>.sra<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">done</span><br>qsub&nbsp;-N&nbsp;fastq&nbsp;-cwd&nbsp;sra2fastq.sh<br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">fastqc</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">vim&nbsp;fastqc.sh<br><span class="hljs-meta" style="color: #61aeee; line-height: 26px;">#!bin/bash</span><br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">for</span>&nbsp;i&nbsp;<span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">in</span>&nbsp;806&nbsp;807&nbsp;809&nbsp;810&nbsp;811&nbsp;812&nbsp;813&nbsp;817<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">do</span><br>&nbsp;&nbsp;fastqc&nbsp;SRR13764<span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$&#123;i&#125;</span>.fastq.gz&nbsp;-o&nbsp;fastqc<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">done</span><br>qsub&nbsp;-N&nbsp;fastqc&nbsp;-cwd&nbsp;fastqc.sh&nbsp;-q&nbsp;g5.q<br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">trim_galore</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">vim&nbsp;trim_galore.sh<br><span class="hljs-meta" style="color: #61aeee; line-height: 26px;">#!bin/bash</span><br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">for</span>&nbsp;i&nbsp;<span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">in</span>&nbsp;806&nbsp;807&nbsp;809&nbsp;810&nbsp;811&nbsp;812&nbsp;813&nbsp;817<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">do</span><br>&nbsp;&nbsp;trim_galore&nbsp;--output_dir&nbsp;clean_data&nbsp;-q&nbsp;25&nbsp;--phred33&nbsp;--length&nbsp;36&nbsp;&nbsp;SRR13764<span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$&#123;i&#125;</span>.fastq.gz&nbsp;<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">done</span><br>qsub&nbsp;-N&nbsp;trim_galore&nbsp;-cwd&nbsp;trim_galore.sh&nbsp;-q&nbsp;g5.q<br></code></pre>
+<ol start="2" data-tool="mdnice编辑器" style="list-style-type: decimal; margin-top: 8px; margin-bottom: 8px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 25px; padding-right: 0px; color: rgb(0, 0, 0);">
+<li><section style="margin-top: 5px; margin-bottom: 5px; color: rgb(1, 1, 1); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; font-weight: normal;">Bowtie2 比对
+介绍：生信软件 | bowtie2（测序序列与参考序列比对） - 云+社区 - 腾讯云 (tencent.com)
+下载基因组hg19</section></li></ol>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">wget&nbsp;-t&nbsp;0&nbsp;-c&nbsp;-b&nbsp;https://hgdownload.soe.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz<br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">-c ：如果下载一半断网中断了，wget -c +网址 可以续下载；
+-t 0 ：如果网速很慢, 总断开重新连接，“-t 0 ”会让他一直重试，直到把文件下载完成；
+-b：后台下载；
+检查下载数据的完整性</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;"><span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$md5sum</span>&nbsp;hg19.fa.gz<br>806c02398f5ac5da8ffd6da2d1d5d1a9&nbsp;&nbsp;hg19.fa.gz<br><span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$echo</span>&nbsp;<span class="hljs-string" style="color: #98c379; line-height: 26px;">"806c02398f5ac5da8ffd6da2d1d5d1a9&nbsp;&nbsp;hg19.fa.gz"</span>&nbsp;&gt;&nbsp;check_md5sum.txt<br><span class="hljs-comment" style="color: #5c6370; font-style: italic; line-height: 26px;">#将数据写入check_md5sum.txt文件</span><br><span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$md5sum</span>&nbsp;-c&nbsp;check_md5sum.txt<br><span class="hljs-comment" style="color: #5c6370; font-style: italic; line-height: 26px;">#检测数据是否一致</span><br>hg19.fa.gz:&nbsp;OK<br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">构建bowtie2索引文件</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">vim&nbsp;index.sh<br><span class="hljs-meta" style="color: #61aeee; line-height: 26px;">#!/bin/bash</span><br>bowtie2-build&nbsp;hg19.fa&nbsp;hg19<br>qsub&nbsp;-N&nbsp;index&nbsp;-cwd&nbsp;index.sh<br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">生成6个文件：
+926M Apr 14 17:41 hg19.1.bt2
+691M Apr 14 17:41 hg19.2.bt2
+4.8K Apr 14 17:18 hg19.3.bt2
+691M Apr 14 17:18 hg19.4.bt2
+926M Apr 14 18:01 hg19.rev.1.bt2
+691M Apr 14 18:01 hg19.rev.2.bt2
+bowtie2比对 一步完成</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">vim&nbsp;bowtie2.sh<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">for</span>&nbsp;i&nbsp;<span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">in</span>&nbsp;806&nbsp;807&nbsp;809&nbsp;810&nbsp;811&nbsp;812&nbsp;813&nbsp;817<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">do</span><br>&nbsp;&nbsp;bowtie2&nbsp;-p&nbsp;10&nbsp;-x&nbsp;~/chipseq/genome/index/bowtie_index/hg19&nbsp;-U&nbsp;SRR13764<span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$&#123;i&#125;</span>_trimmed.fq&nbsp;|&nbsp;samtools&nbsp;sort&nbsp;-O&nbsp;bam&nbsp;-@&nbsp;10&nbsp;-o&nbsp;-&nbsp;&gt;&nbsp;SRR13764<span class="hljs-variable" style="color: #d19a66; line-height: 26px;">$&#123;i&#125;</span>.bam<br><span class="hljs-keyword" style="color: #c678dd; line-height: 26px;">done</span><br><span class="hljs-comment" style="color: #5c6370; font-style: italic; line-height: 26px;">#循环生成bam文件</span><br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">sort：对bam文件进行排序（不能对sam文件进行排序）
+-O：--output format (SAM, BAM）
+-@：samtools中设置排序和压缩的线程数，默认单线程
+分两步完成的步骤：（1）运行bowtie2 获取 SAM 文件</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">nohup&nbsp;bowtie2&nbsp;-p&nbsp;10&nbsp;-x&nbsp;~/chipseq/genome/index/bowtie_index/hg19&nbsp;-U&nbsp;SRR13764809_trimmed.fq&nbsp;-S&nbsp;CTCF_ChIP-seq.hg19.sam&amp;<br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">-S：write hits in SAM format；-q：query input files are fastq</p>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">（2） samtools转换排序为bam格式</p>
+<pre class="custom" data-tool="mdnice编辑器" style="border-radius: 5px; box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px; text-align: left; margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;"><span style="display: block; background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg); height: 30px; width: 100%; background-size: 40px; background-repeat: no-repeat; background-color: #282c34; margin-bottom: -7px; border-radius: 5px; background-position: 10px 10px;"></span><code class="hljs" style="overflow-x: auto; padding: 16px; color: #abb2bf; padding-top: 15px; background: #282c34; border-radius: 5px; display: -webkit-box; font-family: 'Operator Mono', Consolas, Monaco, Menlo, monospace; border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; font-size: 12px;">samtools&nbsp;view&nbsp;-bS&nbsp;CTCF_ChIP-seq.hg19.sam&nbsp;&nbsp;&gt;&nbsp;CTCF_ChIP-seq.hg19.bam<br><span class="hljs-comment" style="color: #5c6370; font-style: italic; line-height: 26px;">#sam转bam</span><br>samtools&nbsp;sort&nbsp;-@&nbsp;10&nbsp;CTCF_ChIP-seq.hg19.bam&nbsp;&gt;&nbsp;CTCF_ChIP-seq.hg19.sorted.bam<br><span class="hljs-comment" style="color: #5c6370; font-style: italic; line-height: 26px;">#排序</span><br><span class="hljs-comment" style="color: #5c6370; font-style: italic; line-height: 26px;">#sam转bam</span><br></code></pre>
+<p data-tool="mdnice编辑器" style="color: rgb(0, 0, 0); font-size: 16px; line-height: 1.8em; letter-spacing: 0em; text-align: left; text-indent: 0em; margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; padding-top: 8px; padding-bottom: 8px; padding-left: 0px; padding-right: 0px;">sam格式详解：SAM文件的每一行代表一个reads的比对情况，包含12列（tab分割），从左往右，每一列的含义不同。参考讲解：BOWTIE2 进行基因组比对 - 简书 (jianshu.com)
+第二列flag的含义 ：（1，2，4，8，16，32…）每个整数代表不同的含义。参考讲解：(5条消息) 2019/2/20_*.bam 与 *.sam文件中的flag的含义和统计结果_super_qun的博客-CSDN博客_bam flag
+图片2.jpg
+第六列GIGAR的含义：
+图片1.jpg</p>
+<figure data-tool="mdnice编辑器" style="margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px; display: flex; flex-direction: column; justify-content: center; align-items: center;"><img src="https://files.mdnice.com/user/40799/3b91a65f-576e-4ddf-a897-e0a4c0ff342d.png" srcset="/img/loading.gif" lazyload alt style="display: block; margin-top: 0px; margin-right: auto; margin-bottom: 0px; margin-left: auto; max-width: 100%; border-top-style: none; border-bottom-style: none; border-left-style: none; border-right-style: none; border-top-width: 3px; border-bottom-width: 3px; border-left-width: 3px; border-right-width: 3px; border-top-color: rgba(0, 0, 0, 0.4); border-bottom-color: rgba(0, 0, 0, 0.4); border-left-color: rgba(0, 0, 0, 0.4); border-right-color: rgba(0, 0, 0, 0.4); border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; object-fit: fill; box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px;"></figure>
+<figure data-tool="mdnice编辑器" style="margin-top: 10px; margin-bottom: 10px; margin-left: 0px; margin-right: 0px; padding-top: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px; display: flex; flex-direction: column; justify-content: center; align-items: center;"><img src="https://files.mdnice.com/user/40799/a2d3d0a6-e927-4ef4-b9a3-a05bb3ddec18.png" srcset="/img/loading.gif" lazyload alt style="display: block; margin-top: 0px; margin-right: auto; margin-bottom: 0px; margin-left: auto; max-width: 100%; border-top-style: none; border-bottom-style: none; border-left-style: none; border-right-style: none; border-top-width: 3px; border-bottom-width: 3px; border-left-width: 3px; border-right-width: 3px; border-top-color: rgba(0, 0, 0, 0.4); border-bottom-color: rgba(0, 0, 0, 0.4); border-left-color: rgba(0, 0, 0, 0.4); border-right-color: rgba(0, 0, 0, 0.4); border-top-left-radius: 0px; border-top-right-radius: 0px; border-bottom-right-radius: 0px; border-bottom-left-radius: 0px; object-fit: fill; box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px;"></figure>
+</section>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E3%80%90%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%AD%A6%E3%80%91-%E3%80%90%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%AD%A6%EF%BC%8CCHIP-seq/" class="category-chain-item">-【生物信息学】 -【生物信息学，CHIP-seq]</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%94%9F%E7%89%A9%E4%BF%A1%E6%81%AF%E5%AD%A6/" class="print-no-link">#生物信息学</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>CHIP-seq</div>
+      <div>https://fry-band.github.io/2024/01/14/CHIP-seq/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>fry-band</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>January 14, 2024</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2024/01/14/%E4%BC%9A%E9%A3%9E%E7%9A%84%E8%9A%AF%E8%9A%93/" title="会飞的蚯蚓">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">会飞的蚯蚓</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/01/14/%E6%80%A7%E6%AC%B2/" title="性欲">
+                        <span class="hidden-mobile">性欲</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>Table of Contents</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"left","width":150,"height":300},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
