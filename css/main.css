@@ -765,7 +765,7 @@ sup > a::before,
   padding: 3rem 0;
 }
 html {
-  font-size: 16px;
+  font-size: 13px;
   letter-spacing: 0.02em;
 }
 html,
@@ -844,7 +844,7 @@ i.iconfont {
   --link-hover-color: #30a9de;
   --link-hover-bg-color: #f8f9fa;
   --line-color: #eaecef;
-  --navbar-bg-color: #2f4154;
+  --navbar-bg-color: #5CAB7D;
   --navbar-text-color: #fff;
   --subtitle-color: #fff;
   --scrollbar-color: #c4c6c9;
@@ -861,7 +861,7 @@ i.iconfont {
     --color-mode: "dark";
   }
   :root:not([data-user-color-scheme]) {
-    --body-bg-color: #181c27;
+    --body-bg-color: #3F4B3B;
     --board-bg-color: #252d38;
     --text-color: #c4c6c9;
     --sec-text-color: #a7a9ad;
@@ -871,9 +871,9 @@ i.iconfont {
     --link-hover-color: #30a9de;
     --link-hover-bg-color: #364151;
     --line-color: #435266;
-    --navbar-bg-color: #1f3144;
-    --navbar-text-color: #d0d0d0;
-    --subtitle-color: #d0d0d0;
+    --navbar-bg-color: #5A9367;
+    --navbar-text-color: #44633F;
+    --subtitle-color: #5CAB7D;
     --scrollbar-color: #687582;
     --scrollbar-hover-color: #9da8b3;
     --button-bg-color: transparent;
@@ -899,7 +899,7 @@ i.iconfont {
 }
 @media not print {
   [data-user-color-scheme="dark"] {
-    --body-bg-color: #181c27;
+    --body-bg-color: #3F4B3B;
     --board-bg-color: #252d38;
     --text-color: #c4c6c9;
     --sec-text-color: #a7a9ad;
@@ -909,9 +909,9 @@ i.iconfont {
     --link-hover-color: #30a9de;
     --link-hover-bg-color: #364151;
     --line-color: #435266;
-    --navbar-bg-color: #1f3144;
-    --navbar-text-color: #d0d0d0;
-    --subtitle-color: #d0d0d0;
+    --navbar-bg-color: #5A9367;
+    --navbar-text-color: #44633F;
+    --subtitle-color: #5CAB7D;
     --scrollbar-color: #687582;
     --scrollbar-hover-color: #9da8b3;
     --button-bg-color: transparent;
